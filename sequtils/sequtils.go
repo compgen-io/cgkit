@@ -180,7 +180,13 @@ func HomopolymerRunLen(seq string) []int {
 		}
 		runLen := end - start
 		for i := start; i < end; i++ {
-			out[i] = runLen
+			switch seq[start] {
+			case 'A', 'C', 'G', 'T', 'a', 'c', 'g', 't':
+				out[i] = runLen
+			default:
+				// non-standard base, mark with negative run length
+				out[i] = -runLen
+			}
 		}
 		start = end
 	}
@@ -189,19 +195,23 @@ func HomopolymerRunLen(seq string) []int {
 
 // HomopolymerCompress returns a compressed version of the sequence
 // where homopolymer runs are compressed to a single base.
-// Example: "AAATCC" -> "ATC"
-func HomopolymerCompress(seq string) string {
+// Example: "AAATCC" -> "ATC", []int{3, 1, 2}
+func HomopolymerCompress(seq string) (string, []int) {
 	var out strings.Builder
 	n := len(seq)
 	if n == 0 {
-		return out.String()
+		return out.String(), []int{}
 	}
 
 	out.WriteByte(seq[0])
+	runLens := []int{1}
 	for i := 1; i < n; i++ {
 		if seq[i] != seq[i-1] {
 			out.WriteByte(seq[i])
+			runLens = append(runLens, 1)
+		} else {
+			runLens[len(runLens)-1]++
 		}
 	}
-	return out.String()
+	return out.String(), runLens
 }
