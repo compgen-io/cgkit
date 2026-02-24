@@ -127,7 +127,7 @@ func dnaCompliment(r byte) byte {
 	case 'N':
 		return 'N'
 	}
-	return 0
+	return r
 }
 
 func ReverseCompliment(seq string) string {
