@@ -29,3 +29,21 @@ func (c *PositionTrackingReader) Read(p []byte) (int, error) {
 	c.n += int64(k)
 	return k, err
 }
+
+type Semaphore chan struct{}
+
+func NewSemaphore(n int) Semaphore {
+	return make(Semaphore, n)
+}
+
+func (s Semaphore) Acquire() {
+	s <- struct{}{}
+}
+
+func (s Semaphore) Release() {
+	<-s
+}
+
+func (s Semaphore) Close() {
+	close(s)
+}

@@ -2,33 +2,13 @@ package sequtils
 
 import (
 	"strings"
-
-	"github.com/compgen-io/cgltk/seqio"
 )
-
-func CalcGC(s seqio.SeqRecord) float64 {
-	gcCount := 0
-	total := 0
-	for chunk := range s.Chunks(1024) {
-		for _, base := range chunk.Seq() {
-			switch base {
-			case 'G', 'C', 'g', 'c':
-				gcCount++
-			}
-			total++
-		}
-	}
-
-	if total > 0 {
-		return (float64(gcCount) / float64(total))
-	}
-	return 0.0
-}
 
 /*
 Convert a DNA base to a number for easier ambiguity checking
 
 bits:
+3210
 TGCA
 
 	0x1 A : Adenine
@@ -126,6 +106,36 @@ func dnaCompliment(r byte) byte {
 		return 'B'
 	case 'N':
 		return 'N'
+	case 'a':
+		return 't'
+	case 'c':
+		return 'g'
+	case 'g':
+		return 'c'
+	case 't':
+		return 'a'
+	case 'r':
+		return 'y'
+	case 'y':
+		return 'r'
+	case 'm':
+		return 'k'
+	case 'k':
+		return 'm'
+	case 's':
+		return 'w'
+	case 'w':
+		return 's'
+	case 'b':
+		return 'v'
+	case 'd':
+		return 'h'
+	case 'h':
+		return 'd'
+	case 'v':
+		return 'b'
+	case 'n':
+		return 'n'
 	}
 	return r
 }
@@ -156,7 +166,10 @@ func DNAMatches(one byte, two byte) bool {
 	oneB := ConvertDNATo4Bit(one)
 	twoB := ConvertDNATo4Bit(two)
 
-	if oneB|twoB == oneB || oneB|twoB == twoB {
+	// AC  & A
+	// 0x3 & 0x1 = 0x1
+
+	if oneB&twoB > 0 {
 		return true
 	}
 	return false
