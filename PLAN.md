@@ -11,8 +11,9 @@ Shell out to `samtools view` to read records.
 - [x] `SamRegionReader` — stream a `chrom:start-end` region
 - [x] Unit tests for SAM line parsing and flags
 - [ ] Integration test with a small test BAM file
-- [ ] Header parsing (read `@SQ`, `@RG`, etc.)
-- [ ] Tag parsing (typed access to optional fields like `NM:i:`, `MD:Z:`)
+- [x] Header parsing (read `@SQ`, `@RG`, etc.)
+- [x] Tag parsing (typed access to optional fields like `NM:i:`, `MD:Z:`)
+- [ ] Direct SAM reading/writing without samtools (only require samtools for BAM/CRAM)
 
 ### Phase 2: native bgzip/BAM reader
 
