@@ -55,6 +55,37 @@ Each incoming read queries at most 3 bins (target +/- 1) per index. Combined wit
 
 Process only a single samtools region (e.g., `chr19` or `chr19:1000-2000`). Skipped-ref and unmapped read pass-through is disabled in this mode, allowing the user to orchestrate per-region jobs externally (e.g., one SLURM task per chromosome). Without `--region`, the entire BAM is read in a single pass with automatic chromosome-transition detection.
 
+### Splice junction matching (`--match-junctions`)
+
+When `--match-junctions` is set, reads must have compatible splice junctions (from CIGAR `N` operations) in addition to positional overlap to be grouped together. This is intended for RNA-seq data where reads from different transcript isoforms may overlap positionally but represent distinct molecules.
+
+#### Junction extraction and pre-merging
+
+Splice junctions are extracted from each read's CIGAR string. Each `N` operation produces a junction with a donor position (where the intron starts) and an acceptor position (where the next exon begins). Adjacent junctions separated by ≤ `--junction-window` bp (default 10) are pre-merged into a single spanning junction. This handles cases where a very small exon is present in one read's alignment but missed in another — a common occurrence with Oxford Nanopore alignments. For example:
+
+```
+Read 1: 50M──N(1000bp)──8M──N(500bp)──50M   → 2 junctions
+Read 2: 50M──N(1508bp)──50M                  → 1 junction
+```
+
+After pre-merging (gap of 8bp ≤ 10bp window), read 1's two junctions collapse into one spanning junction that matches read 2's single junction.
+
+#### Compatibility rules
+
+- **No junctions + no junctions**: compatible (unspliced reads group together).
+- **No junctions + has junctions**: incompatible (an unspliced read and a spliced read at the same locus are likely different molecules).
+- **Both have junctions, default mode**: junction sets must match exactly — same count, with each junction's donor and acceptor positions within ±`--junction-window` bp.
+- **Both have junctions, `--match-one-end` mode**: one read's junction set may be a contiguous sub-sequence of the other's, anchored at the matching end. When 3' ends match (suffix anchor), the shorter read's junctions must match a suffix of the longer read's junctions. When 5' starts match (prefix anchor), the shorter read's junctions must match a prefix. This handles 5' truncation where the shorter molecule is missing junctions from the truncated end.
+
+#### Example (`--match-one-end` with 5' truncation)
+
+```
+Read 1 (full):      junctions A, B, C, D     start=100, end=5000
+Read 2 (truncated): junctions    B, C, D     start=800, end=5000
+```
+
+The 3' ends match (both at 5000). Read 2's junctions [B, C, D] are a suffix of read 1's [A, B, C, D] — compatible. Junction A is missing because read 2 starts after the first exon-intron boundary.
+
 ## UMI clustering
 
 ### Edit distance
@@ -342,6 +373,8 @@ The all-pairs max-intra-cluster-distance computation is capped at 10,000 members
 | `--adaptive-threshold` | false | Discard edges at distances exceeding the false positive rate threshold |
 | `--hp-dist` | false | HP-aware edit distance: one free HP indel per UMI segment (between separators) |
 | `--ignore-refs` | | References to pass through without clustering (comma-separated) |
+| `--junction-window` | 10 | Tolerance (bp) for matching junction positions and merging adjacent junctions |
+| `--match-junctions` | false | Require compatible splice junctions (CIGAR N ops) when grouping reads |
 | `--match-one-end` | false | Match reads if EITHER 5' or 3' ends are within gap |
 | `--no-strand` | false | Ignore strand when grouping reads |
 | `-o`, `--output` | (required) | Output BAM file path |
