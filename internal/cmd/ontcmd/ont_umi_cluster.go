@@ -1576,24 +1576,26 @@ func levDistHP(a, b string, buf *levBuf, maxDist int) int {
 }
 
 // collisionProb returns the probability that two independent random UMIs
-// of length L (over a 4-letter alphabet) are within Levenshtein edit
-// distance d of each other, using the substitution-only approximation:
+// of length L (over a 3-letter alphabet, as used by ONT UMIs) are within
+// Levenshtein edit distance d of each other, using the substitution-only
+// approximation:
 //
-//	P(dist ≤ d) ≈ Σ_{k=0}^{d} C(L,k) × 3^k / 4^L
+//	P(dist ≤ d) ≈ Σ_{k=0}^{d} C(L,k) × 2^k / 3^L
 //
-// This is an upper bound (indels expand the neighborhood slightly) but
-// a good approximation for short UMIs where most errors are substitutions
-// or short HP indels.
+// The 2^k term accounts for the 2 possible wrong bases at each mutated
+// position in a 3-letter alphabet. This is an upper bound (indels expand
+// the neighborhood slightly) but a good approximation for short UMIs
+// where most errors are substitutions or short HP indels.
 func collisionProb(L, d int) float64 {
 	total := 0.0
 	choose := 1.0 // C(L, k) computed iteratively
-	pow3 := 1.0   // 3^k
-	pow4L := math.Pow(4.0, float64(L))
+	powWrong := 1.0 // (alphabet-1)^k = 2^k
+	powAlphaL := math.Pow(3.0, float64(L))
 	for k := 0; k <= d; k++ {
-		total += choose * pow3 / pow4L
+		total += choose * powWrong / powAlphaL
 		// Update for next k: C(L, k+1) = C(L, k) * (L-k) / (k+1)
 		choose *= float64(L-k) / float64(k+1)
-		pow3 *= 3.0
+		powWrong *= 2.0
 	}
 	return total
 }
