@@ -61,7 +61,7 @@ When `--match-junctions` is set, reads must have compatible splice junctions (fr
 
 #### Junction extraction and pre-merging
 
-Splice junctions are extracted from each read's CIGAR string. Each `N` operation produces a junction with a donor position (where the intron starts) and an acceptor position (where the next exon begins). Adjacent junctions separated by ≤ `--junction-window` bp (default 10) are pre-merged into a single spanning junction. This handles cases where a very small exon is present in one read's alignment but missed in another — a common occurrence with Oxford Nanopore alignments. For example:
+Splice junctions are extracted from each read's CIGAR string. Each `N` operation produces a junction with a donor position (where the intron starts) and an acceptor position (where the next exon begins). Adjacent junctions separated by ≤ `--junction-window` bp (default 20) are pre-merged into a single spanning junction. This handles cases where a very small exon is present in one read's alignment but missed in another — a common occurrence with Oxford Nanopore alignments. For example:
 
 ```
 Read 1: 50M──N(1000bp)──8M──N(500bp)──50M   → 2 junctions
@@ -373,7 +373,7 @@ The all-pairs max-intra-cluster-distance computation is capped at 10,000 members
 | `--adaptive-threshold` | false | Discard edges at distances exceeding the false positive rate threshold |
 | `--hp-dist` | false | HP-aware edit distance: one free HP indel per UMI segment (between separators) |
 | `--ignore-refs` | | References to pass through without clustering (comma-separated) |
-| `--junction-window` | 10 | Tolerance (bp) for matching junction positions and merging adjacent junctions |
+| `--junction-window` | 20 | Tolerance (bp) for matching junction positions and merging adjacent junctions |
 | `--match-junctions` | false | Require compatible splice junctions (CIGAR N ops) when grouping reads |
 | `--match-one-end` | false | Match reads if EITHER 5' or 3' ends are within gap |
 | `--no-strand` | false | Ignore strand when grouping reads |

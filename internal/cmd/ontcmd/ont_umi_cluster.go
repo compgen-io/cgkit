@@ -2168,5 +2168,5 @@ func init() {
 	ontUmiClusterCmd.Flags().BoolVar(&umiClusterAdaptiveThreshold, "adaptive-threshold", false, "Discard edges at distances where random collisions exceed the FPR threshold")
 	ontUmiClusterCmd.Flags().Float64Var(&umiClusterAdaptiveAlpha, "adaptive-alpha", 0.05, "Maximum false positive rate per edit distance level (used with --adaptive-threshold)")
 	ontUmiClusterCmd.Flags().BoolVar(&umiClusterMatchJunctions, "match-junctions", false, "Require compatible splice junctions (CIGAR N ops) when grouping reads")
-	ontUmiClusterCmd.Flags().IntVar(&umiClusterJunctionWindow, "junction-window", 10, "Tolerance (bp) for matching junction positions and merging adjacent junctions")
+	ontUmiClusterCmd.Flags().IntVar(&umiClusterJunctionWindow, "junction-window", 20, "Tolerance (bp) for matching junction positions and merging adjacent junctions")
 }
