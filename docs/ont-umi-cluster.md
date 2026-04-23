@@ -55,9 +55,9 @@ Each incoming read queries at most 3 bins (target +/- 1) per index. Combined wit
 
 Process only a single samtools region (e.g., `chr19` or `chr19:1000-2000`). Skipped-ref and unmapped read pass-through is disabled in this mode, allowing the user to orchestrate per-region jobs externally (e.g., one SLURM task per chromosome). Without `--region`, the entire BAM is read in a single pass with automatic chromosome-transition detection.
 
-### Splice junction matching (`--match-junctions`)
+### Splice junction matching (`--junction-match`)
 
-When `--match-junctions` is set, reads must have compatible splice junctions (from CIGAR `N` operations) in addition to positional overlap to be grouped together. This is intended for RNA-seq data where reads from different transcript isoforms may overlap positionally but represent distinct molecules.
+When `--junction-match` is set, reads must have compatible splice junctions (from CIGAR `N` operations) in addition to positional overlap to be grouped together. This is intended for RNA-seq data where reads from different transcript isoforms may overlap positionally but represent distinct molecules.
 
 #### Junction extraction and pre-merging
 
@@ -374,7 +374,7 @@ The all-pairs max-intra-cluster-distance computation is capped at 10,000 members
 | `--hp-dist` | false | HP-aware edit distance: one free HP indel per UMI segment (between separators) |
 | `--ignore-refs` | | References to pass through without clustering (comma-separated) |
 | `--junction-window` | 20 | Tolerance (bp) for matching junction positions and merging adjacent junctions |
-| `--match-junctions` | false | Require compatible splice junctions (CIGAR N ops) when grouping reads |
+| `--junction-match` | false | Require compatible splice junctions (CIGAR N ops) when grouping reads |
 | `--match-one-end` | false | Match reads if EITHER 5' or 3' ends are within gap |
 | `--no-strand` | false | Ignore strand when grouping reads |
 | `-o`, `--output` | (required) | Output BAM file path |

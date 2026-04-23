@@ -1363,7 +1363,7 @@ func levDist(a, b string, buf *levBuf, maxDist int) int {
 //	AAAA vs A: ±1 free + 2 paid = distance 2 (long HP change limited)
 //	AACC vs AC: ±1 free + 1 paid = distance 1 (one free per segment)
 //	CCGA vs CGAA: ±1 free + 1 paid = distance 1 (shared free across both strings)
-//	CCGA/CCCC vs CGAA/CGGC: 1 + 1 = distance 2 (each segment gets its own free)
+//	CCGA/CCCC vs CGAA/CGGC: 1 + 2 = distance 3 (segment 1: free HP del + paid HP ins; segment 2: two subs)
 func levDistHP(a, b string, buf *levBuf, maxDist int) int {
 	m, n := len(a), len(b)
 	if m == 0 {
@@ -2169,6 +2169,6 @@ func init() {
 	ontUmiClusterCmd.Flags().StringVar(&umiClusterMethod, "umi-cluster-method", "adjacency", "UMI clustering method: connected (single-linkage), adjacency (greedy, no chaining), directional (PCR error count model), tiered (distance-attenuated BFS clustering)")
 	ontUmiClusterCmd.Flags().BoolVar(&umiClusterAdaptiveThreshold, "adaptive-threshold", false, "Discard edges at distances where random collisions exceed the FPR threshold")
 	ontUmiClusterCmd.Flags().Float64Var(&umiClusterAdaptiveAlpha, "adaptive-alpha", 0.05, "Maximum false positive rate per edit distance level (used with --adaptive-threshold)")
-	ontUmiClusterCmd.Flags().BoolVar(&umiClusterMatchJunctions, "match-junctions", false, "Require compatible splice junctions (CIGAR N ops) when grouping reads")
+	ontUmiClusterCmd.Flags().BoolVar(&umiClusterMatchJunctions, "junction-match", false, "Require compatible splice junctions (CIGAR N ops) when grouping reads")
 	ontUmiClusterCmd.Flags().IntVar(&umiClusterJunctionWindow, "junction-window", 20, "Tolerance (bp) for matching junction positions and merging adjacent junctions")
 }
