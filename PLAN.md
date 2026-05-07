@@ -126,7 +126,7 @@ Flow:
 ### Step 7: CLI Command (`internal/cmd/seqcmd/msa.go`)
 
 ```
-cgltk seq-msa input.fasta [flags]
+cgkit seq-msa input.fasta [flags]
 ```
 
 **Flags**:
